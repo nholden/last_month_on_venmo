@@ -1,11 +1,14 @@
 require "json"
 require "net/http"
+require "date"
 
 class RecentPayments
   attr_accessor :payments
 
   def initialize(access_token)
-    url = "https://api.venmo.com/v1/payments?access_token=#{access_token}"
+    today = Date.today
+    thirty_days_ago = (today-30).to_s
+    url = "https://api.venmo.com/v1/payments?access_token=#{access_token}&after=#{thirty_days_ago}"
     response = Net::HTTP.get_response(URI.parse(url))
     data = response.body
     @payments = JSON.parse(data)["data"]
