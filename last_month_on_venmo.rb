@@ -26,17 +26,42 @@ class Payments
     end
     payments_with_user
   end     
+
+  def largest
+    largest_amount = 0
+    largest_payment = nil
+    @payments.each do |payment|
+      if payment["amount"] > largest_amount
+        largest_amount = payment["amount"]
+        largest_payment = payment
+      end
+    end
+    date = largest_payment["date_created"][0,10]
+    actor = largest_payment["actor"]["first_name"]
+    target = largest_payment["target"]["user"]["first_name"]
+    amount = "%.2f" % largest_payment["amount"]
+    note = largest_payment["note"]
+    "On #{date}, #{actor} paid #{target} $#{amount} for #{note}"
+  end
 end
 
 print "Your access token: "
 access_token = gets.chomp
-print "Other person's username: "
-username = gets.chomp
-
 last_month_payments = Payments.new(access_token)
-last_month_payments_with_user = last_month_payments.with_user(username)
-if last_month_payments_with_user.empty?
-  puts "No payments with #{username} found."
+print "largest or with_user: "
+command = gets.chomp
+
+if command == "with_user"
+  print "Other person's username: "
+  username = gets.chomp
+  last_month_payments_with_user = last_month_payments.with_user(username)
+  if last_month_payments_with_user.empty?
+    puts "No payments with #{username} found."
+  else
+    last_month_payments_with_user.each { |payment| puts payment }
+  end
+elsif command == "largest"
+  puts last_month_payments.largest
 else
-  last_month_payments_with_user.each { |payment| puts payment }
+  puts "Command not recognized."
 end
