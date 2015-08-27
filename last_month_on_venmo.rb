@@ -11,21 +11,18 @@ class Payments
     @payments = JSON.parse(data)["data"]
   end
 
-  def with_user(username)
-    payments_with_user = []
+  def all
+    payments = []
     @payments.each do |payment|
-      if payment["target"]["user"]["username"].downcase == username.downcase or 
-         payment["actor"]["username"].downcase == username.downcase
-        date = payment["date_created"][0,10]
-        actor = payment["actor"]["first_name"]
-        target = payment["target"]["user"]["first_name"]
-        amount = "%.2f" % payment["amount"]
-        note = payment["note"]
-        payments_with_user << "On #{date}, #{actor} paid #{target} $#{amount} for #{note}"
-      end
+      date = payment["date_created"][0,10]
+      actor = payment["actor"]["first_name"]
+      target = payment["target"]["user"]["first_name"]
+      amount = "%.2f" % payment["amount"]
+      note = payment["note"]
+      payments << "On #{date}, #{actor} paid #{target} $#{amount} for #{note}"
     end
-    payments_with_user
-  end     
+    payments
+  end
 
   def largest
     largest_amount = 0
@@ -44,18 +41,21 @@ class Payments
     "On #{date}, #{actor} paid #{target} $#{amount} for #{note}"
   end
 
-  def all
-    payments = []
+  def with_user(username)
+    payments_with_user = []
     @payments.each do |payment|
-      date = payment["date_created"][0,10]
-      actor = payment["actor"]["first_name"]
-      target = payment["target"]["user"]["first_name"]
-      amount = "%.2f" % payment["amount"]
-      note = payment["note"]
-      payments << "On #{date}, #{actor} paid #{target} $#{amount} for #{note}"
+      if payment["target"]["user"]["username"].downcase == username.downcase or 
+         payment["actor"]["username"].downcase == username.downcase
+        date = payment["date_created"][0,10]
+        actor = payment["actor"]["first_name"]
+        target = payment["target"]["user"]["first_name"]
+        amount = "%.2f" % payment["amount"]
+        note = payment["note"]
+        payments_with_user << "On #{date}, #{actor} paid #{target} $#{amount} for #{note}"
+      end
     end
-    payments
-  end
+    payments_with_user
+  end     
 end
 
 print "Your access token: "
@@ -64,7 +64,11 @@ last_month_payments = Payments.new(access_token)
 print "Command (all, largest, with_user): "
 command = gets.chomp
 
-if command == "with_user"
+if command == "all"
+  last_month_payments.all.each { |payment| puts payment }
+elsif command == "largest"
+  puts last_month_payments.largest
+elsif command == "with_user"
   print "Other person's username: "
   username = gets.chomp
   last_month_payments_with_user = last_month_payments.with_user(username)
@@ -73,10 +77,6 @@ if command == "with_user"
   else
     last_month_payments_with_user.each { |payment| puts payment }
   end
-elsif command == "largest"
-  puts last_month_payments.largest
-elsif command == "all"
-  last_month_payments.all.each { |payment| puts payment }
 else
   puts "Command not recognized."
 end
