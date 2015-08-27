@@ -1,5 +1,5 @@
 # Last Month on Venmo
-A command line application that returns your last 30 days of Venmo payments with another user.
+A command line application that returns information about your last 30 days of Venmo payments.
 
 ## Getting started
 ```
