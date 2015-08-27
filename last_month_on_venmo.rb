@@ -30,7 +30,7 @@ end
 
 print "Your access token: "
 access_token = gets.chomp
-print "Other persons's username: "
+print "Other person's username: "
 username = gets.chomp
 
 last_month_payments = LastMonthPayments.new(access_token)
