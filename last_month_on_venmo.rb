@@ -33,5 +33,10 @@ access_token = gets.chomp
 print "Other persons's username: "
 username = gets.chomp
 
-@user_last_month_payments = LastMonthPayments.new(access_token)
-@user_last_month_payments.with_user(username).each { |payment| puts payment }
+last_month_payments = LastMonthPayments.new(access_token)
+last_month_payments_with_user = last_month_payments.with_user(username)
+if last_month_payments_with_user.empty?
+  puts "No payments with #{username} found."
+else
+  last_month_payments_with_user.each { |payment| puts payment }
+end
