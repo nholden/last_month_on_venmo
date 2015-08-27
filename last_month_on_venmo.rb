@@ -43,12 +43,25 @@ class Payments
     note = largest_payment["note"]
     "On #{date}, #{actor} paid #{target} $#{amount} for #{note}"
   end
+
+  def all
+    payments = []
+    @payments.each do |payment|
+      date = payment["date_created"][0,10]
+      actor = payment["actor"]["first_name"]
+      target = payment["target"]["user"]["first_name"]
+      amount = "%.2f" % payment["amount"]
+      note = payment["note"]
+      payments << "On #{date}, #{actor} paid #{target} $#{amount} for #{note}"
+    end
+    payments
+  end
 end
 
 print "Your access token: "
 access_token = gets.chomp
 last_month_payments = Payments.new(access_token)
-print "largest or with_user: "
+print "Command (all, largest, with_user): "
 command = gets.chomp
 
 if command == "with_user"
@@ -62,6 +75,8 @@ if command == "with_user"
   end
 elsif command == "largest"
   puts last_month_payments.largest
+elsif command == "all"
+  last_month_payments.all.each { |payment| puts payment }
 else
   puts "Command not recognized."
 end
