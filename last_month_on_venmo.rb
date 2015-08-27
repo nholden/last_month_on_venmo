@@ -11,10 +11,11 @@ class LastMonthPayments
     @payments = JSON.parse(data)["data"]
   end
 
-  def with_user(user_id)
+  def with_user(username)
     payments_with_user = []
     @payments.each do |payment|
-      if payment["target"]["user"]["id"] == user_id or payment["actor"]["id"] == user_id
+      if payment["target"]["user"]["username"].downcase == username.downcase or 
+         payment["actor"]["username"].downcase == username.downcase
         date = payment['date_created'][0,10]
         actor = payment['actor']['first_name']
         target = payment['target']['user']['first_name']
@@ -29,8 +30,8 @@ end
 
 print "Your access token: "
 access_token = gets.chomp
-print "Other user's ID: "
-user_id = gets.chomp
+print "Other persons's username: "
+username = gets.chomp
 
 @user_last_month_payments = LastMonthPayments.new(access_token)
-@user_last_month_payments.with_user(user_id).each { |payment| puts payment }
+@user_last_month_payments.with_user(username).each { |payment| puts payment }
